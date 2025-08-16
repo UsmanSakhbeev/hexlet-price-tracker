@@ -43,6 +43,18 @@ class User(AbstractUser):
         return 'user'
 
 
+class TelegramAccount(models.Model):
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE,
+                                related_name='telegram')
+    telegram_id = models.BigIntegerField(unique=True)
+    username = models.CharField(max_length=32, blank=True)
+    photo_url = models.URLField(blank=True)
+
+    def __str__(self):
+        return f"{self.username or self.telegram_id}"
+
+
 class PartnerProfile(models.Model):
     """Расширенный профиль для партнеров."""
 

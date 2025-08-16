@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, PartnerProfile
+from .models import User, PartnerProfile, TelegramAccount
 from config.parser.models import ChannelModerator
 
 
@@ -107,3 +107,10 @@ class PartnerProfileAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user')
+
+
+@admin.register(TelegramAccount)
+class TelegramAccountAdmin(admin.ModelAdmin):
+    list_display = ('user', 'telegram_id', 'username')
+    search_fields = ('telegram_id', 'username',
+                     'user__username', 'user__email')

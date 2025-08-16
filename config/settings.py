@@ -28,6 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TELEGRAM_API_ID = os.getenv('TELEGRAM_API_ID')
 TELEGRAM_API_HASH = os.getenv('TELEGRAM_API_HASH')
 TELEGRAM_SESSION_STRING = os.getenv('TELEGRAM_SESSION_STRING')
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
 # Telegram settings check
 if not TELEGRAM_API_ID or not TELEGRAM_API_HASH or not TELEGRAM_SESSION_STRING:

@@ -40,6 +40,27 @@
             <input class="btn btn-primary" type="submit" value="Войти">
         </div>
     </form>
+
+    <div class="container d-flex justify-content-center align-items-center wrapper mt-3">
+    <script>
+        function onTelegramAuth(user) {
+        console.log('TG onAuth user =', user);
+        const qs = new URLSearchParams(user).toString();
+        // users:telegram_auth -> /users/telegram/
+        window.location.assign("{% url 'users:telegram_auth' %}?" + qs);
+        }
+    </script>
+
+    <script
+        async
+        src="https://telegram.org/js/telegram-widget.js?22"
+        data-telegram-login="{{ telegram_bot_username }}"   <!-- без @ -->
+        data-size="large"
+        data-userpic="true"
+        data-request-access="write"
+        data-onauth="onTelegramAuth(user)"></script>
+    </div>
+
     <div class="container d-flex justify-content-center align-items-center wrapper mt-3">
         <div>
             <span class="fw-bolder">или </span>

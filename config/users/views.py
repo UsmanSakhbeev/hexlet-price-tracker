@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import redirect, render
@@ -16,6 +17,8 @@ from .forms import (
     UserUpdateForm,
 )
 from .models import User
+from .services import get_or_create_user_from_telegram
+from .utils import verify_telegram_auth
 
 
 class LogoutView(View):
@@ -39,7 +42,8 @@ class LoginView(View):
         return render(
             request,
             'login.html',
-            {'form': form}
+            {'form': form,
+             'telegram_bot_username': settings.TELEGRAM_LOGIN_BOT_USERNAME, }
         )
 
     def post(self, request, *args, **kwargs):
@@ -252,7 +256,7 @@ class RestorePasswordRequestView(View):
                                     отправлена на указанный вами Email'
             )
             return redirect('users:login')  # redirect already uses reverse
-        
+
         messages.add_message(request,
                              messages.ERROR,
                              'Пожалуйста, введите корректный Email'
@@ -364,3 +368,23 @@ class RestorePasswordView(View):
              'token': token,
             }
         )
+
+
+class TelegramAuthView(View):
+    def get(self, request, *args, **kwargs):
+        data = request.GET.dict()
+        if not data:
+            messages.error(request, 'Нет данных от Telegram')
+            return redirect(reverse('users:login'))
+
+        ok, reason = verify_telegram_auth(data)
+        if not ok:
+            messages.error(request, f'Вход через Telegram отклонён: {reason}')
+            return redirect(reverse('users:login'))
+
+        user = get_or_create_user_from_telegram(data)
+        auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(request, 'Вы вошли через Telegram')
+        return redirect(reverse('main_index'))
+
+
